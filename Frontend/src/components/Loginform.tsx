@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
 import { LoginInput } from './LoginInput';
+import { useUser } from '../context/usercontext';
 
 
 const loginSchema = z.object({
@@ -14,6 +15,8 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
+  const user = useUser()
+  const {setUid} = user
   const {
     register,
     handleSubmit,
@@ -24,17 +27,19 @@ export const LoginForm = () => {
 
  const loginMutation = useMutation({
     mutationFn: async (data: LoginFormData) => {
-      await axios.post('http://localhost:4000/api/users/login', data);
-      return 
+      const res =await axios.post('http://localhost:4000/api/users/login', data);
+      return res.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log(data.user.email)
       alert('Login successful!');
+      setUid(data.user?.email || data.email)
+     
     },
     onError: (error: any) => {
       alert(error.response?.data?.error || 'Login failed');
     }
   });
-
   const onSubmit = (data: LoginFormData) => {
     loginMutation.mutate(data);
   };
