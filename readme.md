@@ -66,6 +66,10 @@ This project is a simple but secure fullstack login system using:
             cd frontend
         Install dependencies:
             npm install
+            npm install react-form-hook
+            npm install @tanstack/react-query
+            npm install -D typescript @types/react @types/react-dom
+            npm install zod
         Start React app:
             npm run dev
         App runs at: http://localhost:5173 (if using Vite)
