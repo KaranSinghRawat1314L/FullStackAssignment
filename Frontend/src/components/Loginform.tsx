@@ -20,7 +20,7 @@ export const LoginForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
@@ -28,22 +28,22 @@ export const LoginForm = () => {
  const loginMutation = useMutation({
     mutationFn: async (data: LoginFormData) => {
       const res =await axios.post('http://localhost:4000/api/users/login', data);
+      await new Promise((resolve)=> setTimeout(resolve, 5000));
+      console.log("Submitting form data");
       return res.data;
     },
     onSuccess: (data) => {
       console.log(data.user.email)
       alert('Login successful!');
       setUid(data.user?.email || data.email)
-     
     },
     onError: (error: any) => {
       alert(error.response?.data?.error || 'Login failed');
     }
   });
-  const onSubmit = (data: LoginFormData) => {
-    loginMutation.mutate(data);
+  const onSubmit = async (data: LoginFormData) => {
+    await loginMutation.mutateAsync(data);
   };
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-white">
       <form
@@ -71,10 +71,10 @@ export const LoginForm = () => {
         </div>
 
         <button
-          type="submit"
+          type="submit" disabled={isSubmitting}
           className="w-2/3 mt-5 bg-[#263267] text-white p-3 rounded hover:bg-[#1c234f]"
         >
-          Login
+          {isSubmitting ? 'Logging in...' : 'Login'}
         </button>
       </form>
     </div>
